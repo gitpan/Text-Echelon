@@ -4,5 +4,5 @@ Echelon.pm
 MANIFEST
 Makefile.PL
 README
-t/01testall.t
+t/01test.t
 echelon.pl

@@ -13,14 +13,38 @@ Text::Echelon - get random Echelon related words.
   print $te->makeheader();
   print $te->makecustom($pre, $num, $post, $delim);
 
+=head1 Using with mutt
+
+If you want to generate an X-Echelon header on your outgoing mail, put the
+following in your .muttrc:
+C<my_hdr `/path/to/echelon.pl`>
+
+F<echelon.pl> is supplied in this distribution.
+
+=head1 DESCRIPTION
+
+Text::Echelon is a small program that will return Echelon 
+'I<spook words>', as per
+
+F<http://www.attrition.org/attrition/keywords.html>
+
+If you don't know why you might want this, look at:
+
+F<http://www.echelon.wiretapped.net/>
+
+F<http://www.echelonwatch.org/>
+
+=head1 METHODS
+
 =cut
 
 use strict;
 use warnings;
 use vars qw($VERSION);
 
-$VERSION = '0.01';
-my @wordlist = ();
+$VERSION = '0.02';
+my @Wordlist = <DATA>;
+chomp @Wordlist;
 
 =head2 new
 
@@ -29,11 +53,8 @@ Creates a new instance of Text::Echelon
 =cut
 
 sub new {
-    my $self = shift;
-    while (<DATA>) {
-        @wordlist = <DATA>;
-    }
-    srand(time() ^ $$);
+    my $class = shift;
+    my $self  = bless {}, $class;
     return $self;
 }#new
 
@@ -45,9 +66,7 @@ Returns one random spook word or phrase as a scalar
 
 sub get {
     my $self = shift;
-    my $j  = rand($#wordlist);
-    chomp($wordlist[$j]);
-    return ($wordlist[$j]);
+	return $Wordlist[rand($#Wordlist)];
 }#get
 
 =head2 getmany
@@ -60,8 +79,9 @@ between words as parameters. Returns a scalar string of spookwords.
 sub getmany {
     my $self = shift;
     my ($num, $delim) = @_;
-    $num ||= '3';
+    $num   ||= '3';
     $delim ||= ', ';
+    #join $delim, map $self->get (1 .. $num);
     my $str = '';
     for(my $currnum = 1; $currnum <= $num; $currnum++)
     {
@@ -100,21 +120,8 @@ C<X-Echelon: smuggle, CIA, indigo>
 
 sub makeheader {
     my $self = shift;
-    return $self->makecustom('X-Echelon: ', '3', '', ', ');
+    return $self->makecustom('X-Echelon: ');
 }#makeheader
-
-=head1 DESCRIPTION
-
-Text::Echelon is a small program that will return Echelon 
-'I<spook words>', as per
-
-F<http://www.attrition.org/attrition/keywords.html>
-
-If you don't know why you might want this, look at:
-
-F<http://www.echelon.wiretapped.net/>
-
-F<http://www.echelonwatch.org/>
 
 =head1 AVAILABILITY
 
@@ -127,6 +134,11 @@ or from CPAN
 Russell Matbouli E<lt>text-echelon-spam@russell.matbouli.orgE<gt>
 
 F<http://russell.matbouli.org/>
+
+=head1 TODO
+
+Create something more plausable - generate natural language.
+Ideally, a sentence generated randomly that contains spook words.
 
 =head1 LICENSE
 
